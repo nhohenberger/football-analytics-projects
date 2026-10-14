@@ -4,6 +4,7 @@ import polars as pl
 import numpy as np
 from adjustText import adjust_text
 
+#load all current stats
 player_stats = (
     nfl.load_player_stats(
         2026,
@@ -12,6 +13,7 @@ player_stats = (
     .filter(pl.col("position") == "QB")
 )
 
+#sort top 40 players in passing attempts
 eff = (
     player_stats
     .sort("attempts", descending=True)
@@ -20,8 +22,10 @@ eff = (
     .to_pandas()
 )
 
+#set size of figure
 plt.figure(figsize=[12, 8])
 
+#initialize scatter plot
 scatter = plt.scatter(
     eff["attempts"],
     eff["passing_tds"],
@@ -30,6 +34,7 @@ scatter = plt.scatter(
     edgecolors="black"
 )
 
+# add interceptions color bar
 plt.colorbar(scatter, label="Interceptions")
 
 x = eff["attempts"]
@@ -39,6 +44,7 @@ m, b = np.polyfit(x, y, 1)
 
 x_sorted = np.sort(x)
 
+#add trend line
 plt.plot(
 x_sorted,
     m*x_sorted + b,
@@ -50,6 +56,7 @@ x_sorted,
 
 texts = []
 
+#add player names
 for _, row in eff.iterrows():
     texts.append(
         plt.text(
@@ -60,6 +67,7 @@ for _, row in eff.iterrows():
         )
     )
 
+#adjust player names so they aren't on top of each other
 adjust_text(
     texts,
     expand_points=(2.5, 2.5),
@@ -73,6 +81,7 @@ adjust_text(
     )
 )
 
+#put labels
 plt.xlabel("Passing attempts")
 plt.ylabel("Passing TDs")
 plt.title("Top 40 QBs: Passing TDs vs Attempts (Color = INTs)")
