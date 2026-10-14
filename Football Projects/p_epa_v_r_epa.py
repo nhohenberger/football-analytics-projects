@@ -8,19 +8,18 @@ from PIL import Image
 
 #load team stats
 team_stats = nfl.load_team_stats(
-    seasons=2026,
-    summary_level="reg"
-)
+    seasons=[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+    summary_level="reg+post"
+).to_pandas()
 #load teams
 teams = nfl.load_teams().to_pandas()
 
 #initialize epas
 epas = (
     team_stats
-    .sort("passing_epa")
-    .select("team", "passing_epa", "rushing_epa")
-    .head(32)
-    .to_pandas()
+    .groupby("team")[["passing_epa", "rushing_epa"]]
+    .mean()
+    .reset_index()
 )
 
 #merge with team abbr and logo
@@ -57,7 +56,8 @@ plt.plot(
 
 #helper function to get the logo
 def get_logo(url):
-    with urllib.request.urlopen(url) as response:
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
         image_data = response.read()
     img = Image.open(io.BytesIO(image_data))
 
@@ -89,12 +89,12 @@ for _, row in epas.iterrows():
 #set graph settings
 ax.set_xlabel("Passing EPA per Play")
 ax.set_ylabel("Rushing EPA per Play")
-ax.set_title("2026 Team Efficiency (Passing vs Rushing", fontsize=16, fontweight="bold")
+ax.set_title("2018-2025 Team Efficiency (Passing vs Rushing)", fontsize=16, fontweight="bold")
 ax.grid(True, linestyle="--", alpha=0.5)
 
 plt.tight_layout()
 plt.savefig(
-    "Graphs/epa_graph.png",
+    "Graphs/epa_graphMAHOMES.png",
     dpi=300,
     bbox_inches="tight"
 )
