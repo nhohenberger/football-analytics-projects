@@ -74,7 +74,7 @@ plt.tight_layout()
 
 
 plt.savefig(
-    "Graphs/rushing_epa_improvement.png",
+    "Graphs/avg_depth_target.png",
     dpi=300,
     bbox_inches="tight"
 )
