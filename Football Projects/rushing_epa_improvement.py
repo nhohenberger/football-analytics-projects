@@ -89,9 +89,7 @@ for i, row in enumerate(epa.itertuples()):
     if row.epa_per_carry_change >= 0:
         offset = 5
         alignment = (0, 0.5)
-    else:
-        offset = -5
-        alignment = (1, 0.5)
+
 
     ab = AnnotationBbox(
         imagebox,
